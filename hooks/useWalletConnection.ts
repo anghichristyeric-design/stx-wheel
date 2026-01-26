@@ -1,48 +1,73 @@
-import { toast } from "@/components/ui/use-toast";
+"use client"
+
+import { useEffect, useState, useContext } from "react";
 import { AppContext } from "@/context/AppContext";
-import { connect, disconnect, isConnected, getLocalStorage } from "@stacks/connect";
-import { useContext } from "react";
+import { toast } from "@/components/ui/use-toast";
 
 export const useWalletConnection = () => {
-  const { setIsConnected, setIsLoading } = useContext(AppContext)
+  const { setIsConnected, setIsLoading } = useContext(AppContext);
+  const [stacksConnect, setStacksConnect] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Dynamically import @stacks/connect only on client-side
+    import("@stacks/connect").then((module) => {
+      setStacksConnect(module);
+    }).catch(err => {
+      console.error("Failed to load @stacks/connect:", err);
+    });
+  }, []);
 
   const connectWallet = async () => {
+    if (!stacksConnect) {
+      toast({
+        variant: "error",
+        description: "Wallet library is still loading. Please try again.",
+      });
+      return;
+    }
+
     try {
-      const response = await connect();
-      console.log("Wallet connected successfully", response);
       setIsLoading(true);
+      const response = await stacksConnect.connect();
+      console.log("Wallet connected successfully", response?.addresses?.[2].address);
     } catch (error) {
       toast({
         variant: "error",
-        description: "Failed to connect wallet: " + (error instanceof Error ? error.message : String(error)),
+        description:
+          "Failed to connect wallet: " +
+          (error instanceof Error ? error.message : String(error)),
       });
     } finally {
-      const authenticated = isConnected();
+      const authenticated = stacksConnect.isConnected();
       setIsConnected(authenticated);
       setIsLoading(false);
-      return;
     }
   };
 
   const disconnectWallet = () => {
+    if (!stacksConnect) return;
+
     try {
-      disconnect();
+      stacksConnect.disconnect();
       console.log("User disconnected successfully");
     } catch (error) {
       toast({
         variant: "error",
-        description: "Failed to disconnect wallet: " + (error instanceof Error ? error.message : String(error)),
+        description:
+          "Failed to disconnect wallet: " +
+          (error instanceof Error ? error.message : String(error)),
       });
     } finally {
       setIsConnected(false);
-      return;
     }
   };
 
   const retrieveConnectionInfo = () => {
-    if (typeof window === "undefined") return false; // SSR guard
+    if (typeof window === "undefined" || !stacksConnect) return false; // SSR guard
     
-    const userData = getLocalStorage();
+    const userData = stacksConnect.getLocalStorage();
 
     if (userData?.addresses) {
       return userData.addresses.stx[0].address;
@@ -54,6 +79,6 @@ export const useWalletConnection = () => {
   return {
     connectWallet,
     disconnectWallet,
-    retrieveConnectionInfo
+    retrieveConnectionInfo,
   };
 };

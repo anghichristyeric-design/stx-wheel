@@ -7,9 +7,11 @@ import { useWalletConnection } from "@/hooks/useWalletConnection";
 
 export const useClaimToken = () => {
   const {setIsLoading, setCoins} = useContext(AppContext)
-  const connectedWalletAddress = useWalletConnection().retrieveConnectionInfo();
+  const { retrieveConnectionInfo } = useWalletConnection();
   
   const claimToken = async (amount: number) => {
+    const connectedWalletAddress = retrieveConnectionInfo();
+    
     if (connectedWalletAddress === false) {
       toast({
         variant: "error",
