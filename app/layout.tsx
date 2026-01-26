@@ -18,13 +18,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AppProvider>
-        <body className={`${montserrat.className} antialiased`}>
+      <body className={`${montserrat.className} antialiased`}>
+        <AppProvider>
           {children}
+        </AppProvider>
 
-          <Toaster />
-        </body>
-      </AppProvider>
+        <Toaster />
+      </body>
     </html>
   );
 }

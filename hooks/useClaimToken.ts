@@ -1,16 +1,16 @@
+"use client"
+
 import { toast } from "@/components/ui/use-toast"
 import { AppContext } from "@/context/AppContext";
-import { isConnected } from "@stacks/connect";
 import { useContext } from "react";
 import { useWalletConnection } from "@/hooks/useWalletConnection";
 
 export const useClaimToken = () => {
-  const walletConnected = isConnected();
   const {setIsLoading, setCoins} = useContext(AppContext)
-  const retrieveConnectionInfo = useWalletConnection().retrieveConnectionInfo;
+  const connectedWalletAddress = useWalletConnection().retrieveConnectionInfo();
   
   const claimToken = async (amount: number) => {
-    if (!walletConnected) {
+    if (connectedWalletAddress === false) {
       toast({
         variant: "error",
         description: "Please connect your wallet to collect rewards.",
@@ -31,7 +31,7 @@ export const useClaimToken = () => {
     const res = await fetch("/api/claim-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount, address: retrieveConnectionInfo() }),
+      body: JSON.stringify({ amount, address: connectedWalletAddress }),
     });
 
     const data = await res.json();

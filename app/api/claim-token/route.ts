@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       memo: "Claiming tokens from faucet",
       senderKey: process.env.FAUCET_PRIVATE_KEY || "",
       network: STACKS_TESTNET,
-      fee: BigInt(200),
+      fee: BigInt(400),
     });
 
     const result = await broadcastTransaction({transaction});

@@ -40,13 +40,15 @@ export const useWalletConnection = () => {
   };
 
   const retrieveConnectionInfo = () => {
+    if (typeof window === "undefined") return false; // SSR guard
+    
     const userData = getLocalStorage();
 
     if (userData?.addresses) {
       return userData.addresses.stx[0].address;
     }
 
-    return "No wallet connected";
+    return false;
   };
 
   return {
