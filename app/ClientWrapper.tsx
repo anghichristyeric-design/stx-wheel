@@ -1,12 +1,18 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import ConnectButton from "@/components/ConnectButton";
 import { useClaimToken } from "@/hooks/useClaimToken";
 import { AppContext } from "@/context/AppContext";
 
 import dynamic from "next/dynamic";
-const Wheel = dynamic( () => import("react-custom-roulette").then((mod) => mod.Wheel), { ssr: false } );
+const Wheel = dynamic( 
+  () => import("react-custom-roulette").then((mod) => mod.Wheel), 
+  { 
+    ssr: false,
+    loading: () => <div className="h-96 w-96 flex items-center justify-center">Loading wheel...</div>
+  } 
+);
 
 const data = [
   { option: "0 STX", style: { backgroundColor: 'green', textColor: 'white' } },
@@ -25,10 +31,16 @@ const data = [
 ];
 
 export default function ClientWrapper() {
+  const [isMounted, setIsMounted] = useState(false);
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const claimToken = useClaimToken();
-  const {isLoading, coins, setCoins} = useContext(AppContext)
+  const {isLoading, coins, setCoins} = useContext(AppContext);
+
+  // Ensure component only renders after client-side mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Handle Spin Click
   const handleSpinClick = async () => {
@@ -46,10 +58,20 @@ export default function ClientWrapper() {
   const handleStopSpinning = () => {
     // Reward calculation logic based on prizeNumber
     let prizeAmount = Number((data[prizeNumber].option).replace(" STX", ""));
-		
+    
     setCoins(prizeAmount + coins); // Update prize amount
     setMustSpin(false); // Stop the spinning animation
   };
+
+  // Show loading state until mounted
+  if (!isMounted) {
+    return (
+      <main className="flex flex-col h-screen items-center justify-center bg-zinc-50 font-sans">
+        <h1 className="font-bold text-4xl mb-8">STX Wheel of Fortune</h1>
+        <div className="text-center">Initializing...</div>
+      </main>
+    );
+  }
   
   return (
     <main className="flex flex-col h-screen items-center justify-center bg-zinc-50 font-sans">
@@ -79,7 +101,7 @@ export default function ClientWrapper() {
 
       <section className="space-y-4 mt-8 text-center">
         <div className="flex items-center justify-center gap-x-4 w-2xl">
-          <button className="btn w-44 py-3 bg-purple-600"onClick={async () => await claimToken(coins)} disabled={!coins || isLoading}>
+          <button className="btn w-44 py-3 bg-purple-600" onClick={async () => await claimToken(coins)} disabled={!coins || isLoading}>
             Collect Reward
           </button>
           
