@@ -1,9 +1,9 @@
 "use client"
 
-import { toast } from "@/components/ui/use-toast"
-import { AppContext } from "@/context/AppContext";
+import { AppContext } from "../context/AppContext";
+import { toast } from "../components/ui/use-toast"
 import { useContext } from "react";
-import { useWalletConnection } from "@/hooks/useWalletConnection";
+import { useWalletConnection } from "../hooks/useWalletConnection";
 
 export const useClaimToken = () => {
   const {setIsLoading, setCoins} = useContext(AppContext)
@@ -30,7 +30,7 @@ export const useClaimToken = () => {
 
     setIsLoading(true);
 
-    const res = await fetch("/api/claim-token", {
+    const res = await fetch("https://stx-testnet-faucet.vercel.app/api/claim-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount, address: connectedWalletAddress }),

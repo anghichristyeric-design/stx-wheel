@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState, useContext } from "react";
-import { AppContext } from "@/context/AppContext";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "../components/ui/use-toast";
+import { AppContext } from "../context/AppContext";
 
 export const useWalletConnection = () => {
   const { setIsConnected, setIsLoading } = useContext(AppContext);

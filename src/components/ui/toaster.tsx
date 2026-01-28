@@ -2,9 +2,9 @@
 
 "use client"
 
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "./use-toast"
 
-import { Toast, ToastProvider, ToastViewport } from "@/components/ui/toast"
+import { Toast, ToastProvider, ToastViewport } from "./toast"
 
 const Toaster = () => {
   const { toasts } = useToast()

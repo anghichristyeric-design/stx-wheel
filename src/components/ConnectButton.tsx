@@ -1,5 +1,5 @@
-import { AppContext } from "@/context/AppContext";
-import { useWalletConnection } from "@/hooks/useWalletConnection";
+import { AppContext } from "../context/AppContext";
+import { useWalletConnection } from "../hooks/useWalletConnection";
 import { useContext } from "react";
 
 const ConnectButton = () => {

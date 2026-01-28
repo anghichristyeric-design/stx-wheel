@@ -1,18 +1,10 @@
 "use client";
 
 import { useContext, useState, useEffect } from "react";
-import ConnectButton from "@/components/ConnectButton";
-import { useClaimToken } from "@/hooks/useClaimToken";
-import { AppContext } from "@/context/AppContext";
-
-import dynamic from "next/dynamic";
-const Wheel = dynamic( 
-  () => import("react-custom-roulette").then((mod) => mod.Wheel), 
-  { 
-    ssr: false,
-    loading: () => <div className="h-96 w-96 flex items-center justify-center">Loading wheel...</div>
-  } 
-);
+import ConnectButton from "./components/ConnectButton";
+import { useClaimToken } from "./hooks/useClaimToken";
+import { Wheel } from 'react-custom-roulette';
+import { AppContext } from "./context/AppContext";
 
 const data = [
   { option: "0 STX", style: { backgroundColor: 'green', textColor: 'white' } },
@@ -30,7 +22,7 @@ const data = [
   { option: "50 STX" },
 ];
 
-export default function ClientWrapper() {
+function App() {
   const [isMounted, setIsMounted] = useState(false);
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
@@ -115,3 +107,5 @@ export default function ClientWrapper() {
     </main>
   );
 }
+
+export default App
